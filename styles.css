@@ -31,21 +31,21 @@ body {
     gap: 2rem;
 
     box-shadow:
-    0 0 40px rgba(123, 31, 162, 0.5),
-    0 0 80px rgba(103, 58, 183, 0.3),
+     0 0 40px rgba(123, 31, 162, 0.5),
+     0 0 80px rgba(103, 58, 183, 0.3),
     inset 0 0 30px rgba(123, 31, 162, 0.3);
 }
 
 .game-board {
     background:
-    linear-gradient(#000, #000) padding-box,
-    linear-gradient(45deg, #9c27b0, #3f51b5) border-box;
-    border: 3px solid transparent;
-    border-radius: 8px;
+     linear-gradient(#000, #000) padding-box,
+     linear-gradient(45deg, #9c27b0, #3f51b5) border-box;
+     border: 3px solid transparent;
+     border-radius: 8px;
 
     box-shadow:
-    0 0 20px rgba(156, 39, 176, 0.3),
-    0 0 40px rgba(63, 81, 181, 0.2);
+     0 0 20px rgba(156, 39, 176, 0.3),
+     0 0 40px rgba(63, 81, 181, 0.2);
 }
 
 .info-panel {
@@ -76,4 +76,54 @@ body {
 
 .next-piece {
     background: #000;
+    border-radius: 8px;
+    margin: 0.5rem 0 1.5rem;
+
+    background:
+     linear-gradient(#000, #000) padding-box,
+     linear-gradient(45deg, #9c27b0, #3f51b5) border-box;
+    border: 3px solid transparent;
+}
+
+.controls {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.key {
+    display: inline-block;
+    padding: 0.5rem 0.8rem;
+    margin: 0.2rem;
+    font-size: 0.9rem;
+
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+
+    transition: all 0.2s ease;
+}
+
+.key:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(156, 39, 176, 0.4);
+}
+
+/* mobile stuf */
+@media (max-width: 768px) {
+    .game-container {
+        flex-direction: column;
+        margin: 1rem;
+        padding: 1rem;
+    }
+
+    .game-board {
+        width: 100%;
+        height: auto;
+    }
+
+    .info-panel {
+        width: 100%;
+    }
 }
