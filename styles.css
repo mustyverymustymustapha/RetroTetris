@@ -1,0 +1,79 @@
+/* My Tetris CSS */
+/* BTW I planned most of the colour schemes and look out before coding this */
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(
+        135deg,
+        #1a0b2e 0%,
+        #4c0b5f 50%,
+        #1b1b3a 100%
+    );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* I found this awesome retro font! */
+    font-family: "Segoe UI", Roboto, system-ui;
+    color: #fff;
+}
+
+.game-container {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    padding: 2rem;
+    border-radius: 1rem;
+
+    display: flex;
+    gap: 2rem;
+
+    box-shadow:
+    0 0 40px rgba(123, 31, 162, 0.5),
+    0 0 80px rgba(103, 58, 183, 0.3),
+    inset 0 0 30px rgba(123, 31, 162, 0.3);
+}
+
+.game-board {
+    background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(45deg, #9c27b0, #3f51b5) border-box;
+    border: 3px solid transparent;
+    border-radius: 8px;
+
+    box-shadow:
+    0 0 20px rgba(156, 39, 176, 0.3),
+    0 0 40px rgba(63, 81, 181, 0.2);
+}
+
+.info-panel {
+    min-width: 240px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1.5rem;
+    border-radius: 12px;
+
+    /* frosted glass lookin effect because im 🧐 (fancy) */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-panel h2 {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+    background: linear-gradient(90deg, #e91e63, #9c27b0);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 10px rgba(233, 30, 99, 0.5);
+}
+
+.info-panel h3 {
+    font-size: 1.2rem;
+    margin: 1.5rem 0 0.5rem;
+    color: #e1bee7;
+}
+
+.next-piece {
+    background: #000;
+}
