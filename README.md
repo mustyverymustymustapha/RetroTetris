@@ -1,3 +1,4 @@
+![IMG_0228](https://github.com/user-attachments/assets/8dfaac3d-fcf4-4a96-a131-a6731c0c469b)
 # RetroTetris
 
 RetroTetris is a modern remaster the original classic Tetris, bringing the nostalgic experience to your browser!
