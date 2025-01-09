@@ -118,7 +118,7 @@ class TetrisGame {
         this.pieceX = Math.floor((BOARD_WIDTH - this.currentPiece[0].length) / 2);
         this.pieceY = 0;
 
-        if (this.checkColission()) {
+        if (this.checkCollision()) {
             this.gameOver();
         }
 
@@ -149,10 +149,14 @@ class TetrisGame {
             for (let y = 0; y < this.currentPiece.length; y++) {
                 for (let x = 0; x < this.currentPiece[y].length; x++) {
                     if (this.currentPiece[y][x]) {
-                        this.drawBlock(this.ctx, this.pieceX + x, this,pieceY + y, COLORS[this.currentType]);
+                        this.drawBlock(this.ctx, this.pieceX + x, this.pieceY + y, COLORS[this.currentType]);
                     }
                 }
             }
+        }
+
+        if (this.isPaused) {
+            this.drawPauseOverlay();
         }
     }
 
@@ -161,13 +165,13 @@ class TetrisGame {
         this.previewCtx.fillRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
 
         const nextPiece = PIECES[this.nextType];
-        const xOffset = (this.previewCanvas.width - nextPiece[0].length * BLOCK_SIZE)
-        const yOffset = (this.previewCanvas.height - nextPiece.length * BLOCK_SIZE)
+        const xOffset = Math.floor((this.previewCanvas.width / BLOCK_SIZE - nextPiece[0].length) / 2);
+        const yOffset = Math.floor((this.previewCanvas.height / BLOCK_SIZE - nextPiece.length) / 2);
 
         for (let y = 0; y < nextPiece.length; y++) {
             for (let x = 0; x < nextPiece[y].length; x++) {
                 if (nextPiece[y][x]) {
-                    this.drawBlock(this.previewCtx, xOffset / BLOCK_SIZE + y, yOffset / BLOCK_SIZE + y, COLORS[this.nextType]);
+                    this.drawBlock(this.previewCtx, xOffset + x, yOffset + y, COLORS[this.nextType]);
                 }
             }
         }
@@ -181,7 +185,6 @@ class TetrisGame {
                     const newY = this.pieceY + y;
 
                     if (newX < 0 || newX >= BOARD_WIDTH || newY >= BOARD_HEIGHT) return true;
-
                     if (newY >= 0 && this.board[newY][newX]) return true;
                 }
             }
@@ -191,15 +194,15 @@ class TetrisGame {
 
     rotate() {
         const newPiece = this.currentPiece[0].map((_, i) =>
-        this.currentPiece.map(row => row[i]).reverse()
-    );
+            this.currentPiece.map(row => row[i]).reverse()
+        );
 
-    const oldPiece = this.currentPiece;
-    this.currentPiece = newPiece;
+        const oldPiece = this.currentPiece;
+        this.currentPiece = newPiece;
 
-    if (this.checkCollision()) {
-        this.currentPiece = oldPiece;
-    }
+        if (this.checkCollision()) {
+            this.currentPiece = oldPiece;
+        }
     }
 
     lockPiece() {
@@ -215,7 +218,7 @@ class TetrisGame {
     clearLines() {
         let linesCleared = 0;
 
-        for  (let y = BOARD_HEIGHT - 1; y>= 0; y--) {
+        for (let y = BOARD_HEIGHT - 1; y >= 0; y--) {
             if (this.board[y].every(cell => cell !== 0)) {
                 this.board.splice(y, 1);
                 this.board.unshift(Array(BOARD_WIDTH).fill(0));
@@ -251,7 +254,7 @@ class TetrisGame {
     }
 
     gameOver() {
-        if (this.score > 8) {
+        if (this.score > 0) {
             const isHighScore = this.highScores.length < MAX_HIGH_SCORES || this.score > this.highScores[MAX_HIGH_SCORES - 1];
             if (isHighScore) {
                 this.saveHighScore(this.score);
@@ -260,9 +263,10 @@ class TetrisGame {
                 alert(`Game Over! You scored ${this.score} points!`);
             }
         }
-        alert(`Game Over!! You scored ${this.score} points!`);
+        
         this.board = Array(BOARD_HEIGHT).fill().map(() => Array(BOARD_WIDTH).fill(0));
         this.score = 0;
+        this.gameSpeed = DROP_SPEED;
         this.scoreDisplay.textContent = this.score;
         this.spawnNewPiece();
     }
@@ -275,6 +279,7 @@ class TetrisGame {
                 this.drawPauseOverlay();
                 return;
             }
+
             if (!this.currentPiece || this.isPaused) return;
 
             switch (e.key) {
@@ -302,15 +307,28 @@ class TetrisGame {
     }
 
     startGameLoop() {
-        const gameLoop = () => {
+        let lastTime = 0;
+        let dropCounter = 0;
+
+        const gameLoop = (timestamp) => {
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
             if (!this.isPaused) {
-                this.moveDown();
+                dropCounter += deltaTime;
+                
+                if (dropCounter > this.gameSpeed) {
+                    this.moveDown();
+                    dropCounter = 0;
+                }
+                
                 this.draw();
             }
-            setTimeout(gameLoop, this.gameSpeed);
+            
+            requestAnimationFrame(gameLoop);
         };
 
-        gameLoop();
+        requestAnimationFrame(gameLoop);
     }
 }
 
