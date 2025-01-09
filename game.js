@@ -5,6 +5,8 @@ const BLOCK_SIZE = 30;
 const BOARD_WIDTH = 10;
 const BOARD_HEIGHT = 20;
 const DROP_SPEED = 1000;
+const HIGH_SCORES_KEY = 'tetrisHighScores';
+const MAX_HIGH_SCORES = 5;
 
 const PIECES = [
     // no, im not gonna label these with comments to make understanding this painful
@@ -43,6 +45,9 @@ class TetrisGame {
         this.previewCtx = this.previewCanvas.getContext('2d');
         this.scoreDisplay = document.getElementById('score');
 
+        this.highScores = this.loadHighScores();
+        this.updateHighScoresDisplay();
+
         this.score = 0;
         this.gameSpeed = DROP_SPEED;
         this.isPaused = false; // TODO: add pauses
@@ -58,11 +63,51 @@ class TetrisGame {
         this.startGame();
     }
 
+    loadHighScores() {
+        const scores = localStorage.getItem(HIGH_SCORES_KEY);
+        return scores ? JSON.parse(scores) : [];
+    }
+
+    saveHighScore(score) {
+        this.highScores.push(score);
+        this.highScores.sort((a, b) => b - a);
+        if (this.highScores.length > MAX_HIGH_SCORES) {
+            this.highScores = this.highScores.slice(0, MAX_HIGH_SCORES);
+        }
+        localStorage.setItem(HIGH_SCORES_KEY, JSON.stringify(this.highScores));
+        this.updateHighScoresDisplay();
+    }
+
+    updateHighScoresDisplay() {
+        const highScoresList = document.getElementById('highScores');
+        if (highScoresList) {
+            highScoresList.innerHTML = '';
+            this.highScores.forEach((score, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${index + 1}. ${score}`;
+                highScoresList.appendChild(li);
+            });
+        }
+    }
+
     startGame() {
         this.spawnNewPiece();
         this.draw();
         this.setupControls();
         this.startGameLoop();
+    }
+
+    drawPauseOverlay() {
+        if (this.isPaused) {
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '20px "Press Start 2P"';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('PAUSED', this.canvas.width / 2, this.canvas.height / 2);
+            this.ctx.font = '16px "Press Start 2P"';
+            this.ctx.fillText('Press P to resume', this.canvas.width / 2, this.canvas.height / 2 + 40);
+        }
     }
 
     spawnNewPiece() {
@@ -206,6 +251,15 @@ class TetrisGame {
     }
 
     gameOver() {
+        if (this.score > 8) {
+            const isHighScore = this.highScores.length < MAX_HIGH_SCORES || this.score > this.highScores[MAX_HIGH_SCORES - 1];
+            if (isHighScore) {
+                this.saveHighScore(this.score);
+                alert(`New High Score: ${this.score} points!`);
+            } else {
+                alert(`Game Over! You scored ${this.score} points!`);
+            }
+        }
         alert(`Game Over!! You scored ${this.score} points!`);
         this.board = Array(BOARD_HEIGHT).fill().map(() => Array(BOARD_WIDTH).fill(0));
         this.score = 0;
@@ -215,6 +269,12 @@ class TetrisGame {
 
     setupControls() {
         document.addEventListener('keydown', (e) => {
+            if (e.key === 'p' || e.key === 'P') {
+                this.isPaused = !this.isPaused;
+                this.draw();
+                this.drawPauseOverlay();
+                return;
+            }
             if (!this.currentPiece || this.isPaused) return;
 
             switch (e.key) {
